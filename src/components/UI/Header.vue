@@ -1,0 +1,18 @@
+<template>
+  <div class="container-fluid">
+    <ul class="list-unstyled">
+      <li><router-link to="/dashboard">Dashboard</router-link></li>
+      <li><router-link to="/applications">Applications</router-link></li>
+    </ul>
+  </div>
+</template>
+
+<style scoped>
+ul {
+  display: flex;
+}
+ul li {
+  display: block;
+  margin: 12px 24px;
+}
+</style>
