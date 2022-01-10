@@ -25,12 +25,14 @@ Vue.prototype.$apiURL = `http://192.168.1.2/api_doc/index.php`
 import Dashboard from '@/components/Dashboard'
 import Applications from '@/components/Applications'
 import Modules from '@/components/Modules'
+import Terminals from '@/components/Terminals'
 
 const routes = [
   { path:'/', redirect: '/dashboard' },
   { path:'/dashboard', component: Dashboard },
   { path:'/applications', component: Applications },
   { path:'/modules', component: Modules },
+  { path:'/terminals', component: Terminals },
 ]
 
 const router = new VueRouter({
