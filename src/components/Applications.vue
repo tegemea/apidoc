@@ -170,12 +170,12 @@ export default {
             .then(res => {
               if(res.status === 200) {
                 this.applications.splice(i, 1);
-                this.$swal.fire('Applications Deleted Successfully', ``, 'success');
+                this.$swal.fire('Application Deleted Successfully', ``, 'success');
               }
             })
-            .catch(err => console.log(res))
+            .catch(err => console.log(err))
         } else if (res.isDenied) {
-          this.$swal.fire('Destination was not deleted..!', '', 'info')
+          this.$swal.fire('Application was not deleted..!', '', 'info')
         }
       })
     },
