@@ -3,6 +3,7 @@
     <ul class="list-unstyled">
       <li><router-link to="/dashboard">Dashboard</router-link></li>
       <li><router-link to="/applications">Applications</router-link></li>
+      <li><router-link to="/modules">Modules</router-link></li>
     </ul>
   </div>
 </template>

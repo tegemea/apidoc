@@ -17,14 +17,20 @@ Vue.config.productionTip = false
 Vue.prototype.$axios = Axios;
 Vue.prototype.$jquery = jQuery;
 
+// basic global variables
+Vue.prototype.$baseServerURL = 'http://192.168.1.2'
+Vue.prototype.$apiURL = `http://192.168.1.2/api_doc/index.php`
+
 // import components for use in routes
 import Dashboard from '@/components/Dashboard'
 import Applications from '@/components/Applications'
+import Modules from '@/components/Modules'
 
 const routes = [
   { path:'/', redirect: '/dashboard' },
   { path:'/dashboard', component: Dashboard },
   { path:'/applications', component: Applications },
+  { path:'/modules', component: Modules },
 ]
 
 const router = new VueRouter({
