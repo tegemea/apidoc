@@ -19,6 +19,7 @@
               <th>Format</th>
               <th>Scheme</th>
               <th>Base URL</th>
+              <th class="text-center">Modules</th>
               <th class="mw-10">Edit</th>
               <th class="mw-10">Delete</th>
             </tr>
@@ -30,6 +31,14 @@
               <td>{{ application.format }}</td>
               <td>{{ application.scheme }}</td>
               <td>{{ application.base_url }}</td>
+              <td class="text-center">
+                <button href="#" :title="`View ${application.name} modules`"
+                  data-toggle="modal" data-target="#modulesListingModal"
+                  class="btn btn-secondary badge badge-pill badge-secondary"
+                  @click.prevent="loadApplicationModules(i)">
+                  {{ application.modules.length }}
+                </button>
+              </td>
               <td><a @click.prevent="loadApplicaton(i)" href="#">Edit</a></td>
               <td><a @click.prevent="removeApplication(i)" href="#">Delete</a></td>
             </tr>
@@ -86,6 +95,40 @@
             </div>
           </div>
         </div>
+
+        <!-- Modules Listing Modal -->
+        <div class="modal fade" id="modulesListingModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Modules</h5>
+                <button @click="applicationModules = []" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Module Name</th>
+                      <th>View Module</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="module in applicationModules" :key="module.id">
+                      <td>{{ module.name }}</td>
+                      <td><router-link to="#">View</router-link></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="modal-footer">
+                <button @click="applicationModules = []" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <!-- <button type="button" class="btn btn-primary">Understood</button> -->
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -96,7 +139,7 @@ export default {
   data() {
     return {
       application: { id: '', name: '', description:'', version:'', format:'', scheme:'', baseURL:'' },
-      applications: [],
+      applications: [], applicationModules: [],
       baseServerURL: this.$baseServerURL,
       apiURL: this.$apiURL,
       edit: false,
@@ -154,6 +197,9 @@ export default {
       this.application.format = this.applications[i].format;
       this.application.scheme = this.applications[i].scheme;
       this.application.baseURL = this.applications[i].base_url;
+    },
+    loadApplicationModules(i) {
+      this.applicationModules = this.applications[i].modules;
     },
     removeApplication(i) {
       let id = this.applications[i].id;
