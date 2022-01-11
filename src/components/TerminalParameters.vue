@@ -62,7 +62,7 @@ export default {
     }
   },
   mounted() {
-    //
+    this.getTerminalParameters();
   },
   methods: {
     validateData() {
@@ -72,7 +72,7 @@ export default {
       //
     },
     getTerminalParameters() {
-      this.$axios.get(`${this.apiURL}/terminal-parameters`)
+      this.$axios.get(`${this.apiURL}/terminalParameters`)
         .then(res => this.terminalParameters = res.data.data)
         .catch(err => console.log(err))
     },
