@@ -98,7 +98,7 @@
 
         <!-- Modules Listing Modal -->
         <div class="modal fade" id="modulesListingModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-          <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+          <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
               <div class="modal-header">
                 <h5 class="modal-title" id="staticBackdropLabel">Modules</h5>
@@ -111,13 +111,15 @@
                   <thead>
                     <tr>
                       <th>Module Name</th>
-                      <th>View Module</th>
+                      <th>Related?</th>
+                      <th>Relationships</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr v-for="module in applicationModules" :key="module.id">
                       <td>{{ module.name }}</td>
-                      <td><router-link to="#">View</router-link></td>
+                      <td>{{ module.related ? 'Yes' : '' }}</td>
+                      <td>{{ module.relationships }}</td>
                     </tr>
                   </tbody>
                 </table>
