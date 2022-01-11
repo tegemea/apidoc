@@ -13,6 +13,7 @@
               <th>Application</th>
               <th>related?</th>
               <th>Relationships</th>
+              <th class="text-center">Terminals</th>
               <th>Edit</th>
               <th>Delete</th>
             </tr>
@@ -23,6 +24,15 @@
               <td>Application</td>
               <td>{{ module.related ? 'Yes' : '---' }}</td>
               <td>{{ module.relationships }}</td>
+              <td class="text-center">
+                <a v-if="module.terminals.length"
+                  :title="`View ${module.name} terminals`"
+                  @click.prevent="loadModuleTerminals(i)"
+                  data-toggle="modal" data-target="#moduleTerminalsModal"
+                  href="#" class="btn btn-secondary badge badge-pill badge-secondary">
+                  {{ module.terminals.length }}
+                </a>
+              </td>
               <td><a @click.prevent="loadModule(i)" href="#">Edit</a></td>
               <td><a @click.prevent="removeModule(i)" href="#">Delete</a></td>
             </tr>
@@ -87,6 +97,42 @@
             </div>
           </div>
         </div>
+
+        <!-- Module Terminals Modal -->
+        <div class="modal fade" id="moduleTerminalsModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+          <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Terminals</h5>
+                <button @click="moduleTerminals = []" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Terminal Name</th>
+                      <th>Method</th>
+                      <th>Path</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="terminal in moduleTerminals" :key="terminal.id">
+                      <td>{{ terminal.name }}</td>
+                      <td>{{ terminal.method }}</td>
+                      <td>{{ terminal.path }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="modal-footer">
+                <button @click="moduleTerminals = []" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <!-- <button type="button" class="btn btn-primary">Understood</button> -->
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -97,7 +143,7 @@ export default {
   data() {
     return {
       module: { id:'', applicationID:'', name:'', description:'', related: false, relationships:'', },
-      modules: [], applications: [],
+      modules: [], moduleTerminals: [], applications: [],
       baseServerURL: this.$baseServerURL,
       apiURL: this.$apiURL,
       edit: false
@@ -156,13 +202,16 @@ export default {
     },
     loadModule(i) {
       this.edit = true; this.$jquery('#moduleModal').modal('show');
-      this.module.id = this.modules[i].id; 
+      this.module.id = this.modules[i].id;
       this.module.name = this.modules[i].name;
       this.module.application = this.modules[i].application;
       this.module.applicationID = this.modules[i].application.id;
       this.module.description = this.modules[i].description;
       this.module.relationships = this.modules[i].relationships;
       this.module.related = this.modules[i].related;
+    },
+    loadModuleTerminals(i) {
+      this.moduleTerminals = this.modules[i].terminals;
     },
     removeModule(i) {
       let id = this.modules[i].id;
