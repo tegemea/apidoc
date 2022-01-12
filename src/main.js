@@ -19,7 +19,7 @@ Vue.prototype.$jquery = jQuery;
 
 // basic global variables
 Vue.prototype.$baseServerURL = 'http://192.168.1.2'
-Vue.prototype.$apiURL = `http://192.168.1.2/api_doc/index.php`
+Vue.prototype.$apiURL = `http://192.168.1.2/api_doc`
 
 // import components for use in routes
 import Dashboard from '@/components/Dashboard'
