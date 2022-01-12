@@ -6,6 +6,7 @@
       <li><router-link to="/modules">Modules</router-link></li>
       <li><router-link to="/terminals">Terminals</router-link></li>
       <li><router-link to="/terminal-parameters">Terminal Parameters</router-link></li>
+      <li><router-link to="/http-codes">Http Codes</router-link></li>
     </ul>
   </div>
 </template>

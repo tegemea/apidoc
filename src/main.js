@@ -27,6 +27,7 @@ import Applications from '@/components/Applications'
 import Modules from '@/components/Modules'
 import Terminals from '@/components/Terminals'
 import TerminalParameters from '@/components/TerminalParameters'
+import HttpCodes from '@/components/HttpCodes'
 
 const routes = [
   { path:'/', redirect: '/dashboard' },
@@ -35,6 +36,7 @@ const routes = [
   { path:'/modules', component: Modules },
   { path:'/terminals', component: Terminals },
   { path:'/terminal-parameters', component: TerminalParameters },
+  { path:'/http-codes', component: HttpCodes },
 ]
 
 const router = new VueRouter({
