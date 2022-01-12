@@ -8,6 +8,7 @@
       <li><router-link to="/terminal-parameters">Terminal Parameters</router-link></li>
       <li><router-link to="/http-codes">Http Codes</router-link></li>
       <li><router-link to="/terminal-examples">Terminal Examples</router-link></li>
+      <li><router-link to="/tables">Tables</router-link></li>
     </ul>
   </div>
 </template>
