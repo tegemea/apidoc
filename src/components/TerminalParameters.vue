@@ -206,8 +206,8 @@ export default {
 
       // retrieve module ID, then applicationID
       this.$axios.get(`${this.apiURL}/terminals/${this.terminalParameter.terminalID}`)
-        .then(res => {
-          this.terminalParameter.moduleID = res.data.data[0].module.id;
+        .then(res => { // console.log(res.data.data.module.id)
+          this.terminalParameter.moduleID = res.data.data.module.id;
           this.$axios.get(`${this.apiURL}/modules/${this.terminalParameter.moduleID}`)
             .then(res => this.terminalParameter.applicationID = res.data.data.application.id);
         }
