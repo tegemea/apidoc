@@ -9,7 +9,8 @@
         <tr>
           <th>Name</th>
           <th>Module</th>
-          <th>Method</th>
+          <th class="text-center">Method</th>
+          <th class="text-center">Http Codes</th>
           <th>Path</th>
           <th>Edit</th>
           <th>Delete</th>
@@ -19,7 +20,12 @@
         <tr v-for="(terminal, i) in terminals" :key="terminal.id">
           <td>{{ terminal.name }}</td>
           <td>{{ terminal.module.name }}</td>
-          <td>{{ terminal.method }}</td>
+          <td class="text-center">{{ terminal.method }}</td>
+          <td class="text-center">
+            <button v-if="terminal.codes.length" class="btn btn-secondary badge badge-pill">
+              {{ terminal.codes.length }}
+            </button>
+          </td>
           <td>{{ terminal.path }}</td>
           <td><a @click.prevent="loadTerminal(i)" href="#">Edit</a></td>
           <td><a @click.prevent="removeTerminal(i)" href="#">Delete</a></td>
@@ -68,9 +74,24 @@
                 <input type="text" name="path" v-model="terminal.path" id="path" class="form-control">
               </div>
               <div class="form-group">
+                <div class="card">
+                  <div class="card-header">Choose Http Codes for this terminal</div>
+                  <div class="card-body">
+                    <div class="row">
+                      <div v-for="code in terminal.codes" class="col-lg-4" :key="code.id">
+                        <label>
+                          <input type="checkbox" v-model="code.checked">
+                            {{ code.code }} {{ code.name }}
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
                 <label for="description">Description</label>
                 <textarea name="description" v-model="terminal.description" 
-                  id="description" cols="30" rows="6" class="form-control"
+                  id="description" cols="30" rows="4" class="form-control"
                 ></textarea>
               </div>
             </form>
@@ -92,14 +113,21 @@
 export default {
   data() {
     return {
-      terminal: { id:'', name:'', description:'', method:'', path:'', moduleID:'' },
-      terminals: [], modules: [],
+      terminal: { id:'', name:'', description:'', method:'', path:'', moduleID:'', codes: [] },
+      terminals: [], modules: [], httpCodes: [],
       baseServerURL: this.$baseServerURL,
       apiURL: this.$apiURL,
       edit: true
     }
   },
+  computed: {
+    //
+  },
+  watch: {
+    //
+  },
   mounted() {
+    this.getHttpCodes();
     this.getModules();
     this.getTerminals();
   },
@@ -146,6 +174,11 @@ export default {
         .then(res => this.modules = res.data.data)
         .catch(err => console.log(err))
     },
+    getHttpCodes() {
+      this.$axios.get(`${this.apiURL}/httpCodes`)
+        .then(res => this.httpCodes = res.data.data)
+        .catch(err => console.log(err))
+    },
     loadTerminal(i) {
       this.edit = true; this.$jquery('#terminalModal').modal('show');
       this.terminal.id = this.terminals[i].id;
@@ -154,6 +187,32 @@ export default {
       this.terminal.method = this.terminals[i].method;
       this.terminal.path = this.terminals[i].path;
       this.terminal.moduleID = this.terminals[i].module.id;
+      this.terminal.codes = this.terminals[i].codes;
+      
+      // add checked into each terminal code
+      if(this.terminal.codes.length) {
+        this.terminal.codes = this.terminals[i].codes;
+        this.terminal.codes.forEach(c => c.checked = true)
+
+        let terminalCodeIDs = [];
+        let allHttpCodeIDs = [];  
+        this.terminals[i].codes.forEach(c => terminalCodeIDs.push(c.id));
+        this.httpCodes.forEach(c1 => allHttpCodeIDs.push(c1.id));
+        
+        // FIXME: error is terminal codes aren't coming with IDs ???
+        // - Rama should return IDs with terminal codes
+
+        allHttpCodeIDs.forEach(c2 => {
+          if(!terminalCodeIDs.includes(c2.id)) {
+            this.terminal.codes.push(this.httpCodes.find(c3 => c3.id === c3.id));
+          }
+        })
+
+      // this.terminal.codes.forEach(c => c.checked = true);
+      } else {
+        this.terminal.codes = this.httpCodes;
+        this.terminal.codes.forEach(c => c.checked = false);
+      }
     },
     removeTerminal(i) {
       let id = this.terminals[i].id;
@@ -180,7 +239,7 @@ export default {
       })
     },
     clearTerminalForm() {
-      this.terminal.id = ''; this.terminal.name = ''; this.terminal.description = ''; 
+      this.terminal.id = ''; this.terminal.name = ''; this.terminal.description = ''; this.terminal.codes = [];
       this.terminal.method = ''; this.terminal.path = ''; this.terminal.moduleID = '';
       this.edit = false; document.querySelector('#terminalForm').reset();
     }
