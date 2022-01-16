@@ -9,6 +9,7 @@
       <li><router-link to="/http-codes">Http Codes</router-link></li>
       <li><router-link to="/terminal-examples">Terminal Examples</router-link></li>
       <li><router-link to="/tables">Tables</router-link></li>
+      <li><router-link to="/table-fields">Table Fields</router-link></li>
     </ul>
   </div>
 </template>
