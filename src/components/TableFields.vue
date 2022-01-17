@@ -58,7 +58,7 @@
                       <label for="module_id">Select Module</label>
                       <select name="module_id" v-model="tableField.moduleID" id="module_id" class="form-control">
                         <option value="" selected disabled>--- Select Module ---</option>
-                        <option v-for="module in (!edit ? applicationModules : modules)" :value="module.id" :key="module.id">
+                        <option v-for="module in applicationModules" :value="module.id" :key="module.id">
                           {{ module.name }}
                         </option>
                       </select>
@@ -67,7 +67,7 @@
                       <label for="table_id">Select Table</label>
                       <select name="table_id" v-model="tableField.tableID" id="table_id" class="form-control">
                         <option value="" selected disabled>--- Select Table ---</option>
-                        <option v-for="table in (!edit ? moduleTables : tables)" :value="table.id" :key="table.id">
+                        <option v-for="table in moduleTables" :value="table.id" :key="table.id">
                           {{ table.name }}
                         </option>
                       </select>
@@ -92,8 +92,10 @@
                 </form>
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-outline-secondary">Clear</button>
-                <button type="button" class="btn btn-primary">{{ !edit ? 'Add Table Field' : 'Save Changes' }}</button>
+                <button @click.prevent="clearTableFieldsForm()" type="button" class="btn btn-outline-secondary">Clear</button>
+                <button @click.prevent="validateData" type="button" class="btn btn-primary">
+                  {{ !edit ? 'Add Table Field' : 'Save Changes' }}
+                </button>
               </div>
             </div>
           </div>
@@ -107,7 +109,7 @@
 export default {
   data() {
     return {
-      tableField: { id:'', applicationID: '', moduleID: '', tableID:'', type:'', description:'' },
+      tableField: { id:'', name:'', applicationID: '', moduleID: '', tableID:'', type:'', description:'' },
       applications: [], applicationModules: [], modules: [], moduleTables: [], tables: [], tableFields: [], 
       apiURL: this.$apiURL,
       edit: false,
@@ -142,6 +144,7 @@ export default {
   methods: {
     validateData() {
       this.sendData();
+      console.log('validating...')
     },
     sendData() {
       let vm = this;
@@ -149,7 +152,7 @@ export default {
         // edit data
         let formData = new FormData(vm.$refs.tableFieldsForm)
         formData.append('_method', 'PUT')
-        vm.$axios.post(`${vm.apiURL}/tableFields/${vm.tableField.id}`, formData)
+        vm.$axios.post(`${vm.apiURL}/tablesFields/${vm.tableField.id}`, formData)
           .then(res => {
              if(res.status === 200) {
                this.$jquery('#tableFieldModal').modal('hide');
@@ -161,8 +164,8 @@ export default {
       } else {
         // add data
         let formData = new FormData(vm.$refs.tableFieldsForm)
-        vm.$axios.post(`${vm.apiURL}/tableFields`, formData)
-          .then(res => {
+        vm.$axios.post(`${vm.apiURL}/tablesFields`, formData)
+          .then(res => { console.log('editing...')
              if(res.status === 201) {
                this.$jquery('#tableFieldModal').modal('hide');
                this.$swal('Table Field Added Successfully','New Table Field added','success')
@@ -200,7 +203,7 @@ export default {
       this.tableField.description = this.tableFields[i].description;
       this.tableField.tableID = this.tableFields[i].table.id;
 
-      // FIXME: Needs to make sure modules returns their tables too
+      // Retrieve Module from tableID & application from moduleID
       this.$axios.get(`${this.apiURL}/tables/${this.tableField.tableID}`)
       .then(res => {
         this.tableField.moduleID = res.data.data.module.id;
@@ -219,10 +222,10 @@ export default {
         denyButtonText: `No, don't delete`,
       }).then((res) => {
         if (res.isConfirmed) {
-          this.$axios.delete(`${this.apiURL}/tableFields/${id}`)
+          this.$axios.delete(`${this.apiURL}/tablesFields/${id}`)
             .then(res => {
               if(res.status === 200) {
-                this.applications.splice(i, 1);
+                this.tableFields.splice(i, 1);
                 this.$swal.fire('Table Field Deleted Successfully', ``, 'success');
               }
             })
@@ -233,7 +236,9 @@ export default {
       })
     },
     clearTableFieldsForm() {
-      console.log('clearing...')
+       this.tableField.id = ''; this.tableField.name = ''; this.tableField.applicationID = ''; this.tableField.type = '';
+       this.tableField.moduleID = ''; this.tableField.tableID = ''; this.tableField.description = '';
+       this.edit = false; document.querySelector('#tableFieldsForm').reset();
     }
   }
 }
