@@ -11,9 +11,10 @@
             <tr>
               <th>Module Name</th>
               <th>Application</th>
-              <th>related?</th>
+              <th>Related?</th>
               <th>Relationships</th>
               <th class="text-center">Terminals</th>
+              <th class="text-center">Tables</th>
               <th>Edit</th>
               <th>Delete</th>
             </tr>
@@ -31,6 +32,15 @@
                   data-toggle="modal" data-target="#moduleTerminalsModal"
                   href="#" class="btn btn-secondary badge badge-pill badge-secondary">
                   {{ module.terminals.length }}
+                </a>
+              </td>
+              <td class="text-center">
+                <a v-if="module.tables.length"
+                  :title="`View ${module.name} tables`"
+                  @click.prevent="loadModuleTables(i)"
+                  data-toggle="modal" data-target="#moduleTablesModal"
+                  href="#" class="btn btn-secondary badge badge-pill badge-secondary">
+                  {{ module.tables.length }}
                 </a>
               </td>
               <td><a @click.prevent="loadModule(i)" href="#">Edit</a></td>
@@ -103,7 +113,7 @@
           <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
               <div class="modal-header">
-                <h5 class="modal-title" id="staticBackdropLabel">Terminals</h5>
+                <h5 class="modal-title" id="staticBackdropLabel">Module Terminals</h5>
                 <button @click="moduleTerminals = []" type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button>
@@ -133,6 +143,39 @@
             </div>
           </div>
         </div>
+
+        <!-- Module Tables Modal -->
+        <div class="modal fade" id="moduleTablesModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+          <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Module Tables</h5>
+                <button @click="moduleTables = []" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Table Name</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="table in moduleTables" :key="table.id">
+                      <td>{{ table.name }}</td>
+                      <td>{{ table.description }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="modal-footer">
+                <button @click="moduleTables = []" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -143,7 +186,7 @@ export default {
   data() {
     return {
       module: { id:'', applicationID:'', name:'', description:'', related: false, relationships:'', },
-      modules: [], moduleTerminals: [], applications: [],
+      modules: [], moduleTerminals: [], applications: [], moduleTables: [],
       baseServerURL: this.$baseServerURL,
       apiURL: this.$apiURL,
       edit: false
@@ -212,6 +255,9 @@ export default {
     },
     loadModuleTerminals(i) {
       this.moduleTerminals = this.modules[i].terminals;
+    },
+    loadModuleTables(i) {
+      this.moduleTables = this.modules[i].tables;
     },
     removeModule(i) {
       let id = this.modules[i].id;
