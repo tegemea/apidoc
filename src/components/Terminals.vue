@@ -22,7 +22,9 @@
           <td>{{ terminal.module.name }}</td>
           <td class="text-center">{{ terminal.method }}</td>
           <td class="text-center">
-            <button v-if="terminal.codes.length" class="btn btn-secondary badge badge-pill">
+            <button 
+              @click.prevent="loadTerminalCodes(i)"
+              v-if="terminal.codes.length" class="btn btn-secondary badge badge-pill">
               {{ terminal.codes.length }}
             </button>
           </td>
@@ -105,6 +107,39 @@
         </div>
       </div>
     </div>
+
+    <!-- Terminals Codes Modal -->
+    <div class="modal fade" id="terminalCodesModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="staticBackdropLabel">Terminal Codes</h5>
+            <button @click="terminal.codes = []" type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th class="text-center">Code</th>
+                  <th>Name</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="code in terminal.codes" :key="code.id">
+                  <td class="text-center">{{ code.code }}</td>
+                  <td>{{ code.name }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="modal-footer">
+            <button @click="terminal.codes = []" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -141,8 +176,13 @@ export default {
         // edit data
         let formData = new FormData(vm.$refs.terminalForm)
         formData.append('_method', 'PUT');
+        for(let i in this.terminal.codes) {
+          if(this.terminal.codes[i].checked) {
+            formData.append(`codes[${i}]`, this.terminal.codes[i].id);
+          }
+        }
         this.$axios.post(`${vm.apiURL}/terminals/${vm.terminal.id}`, formData)
-          .then(res => { // console.log(res)
+          .then(res => {
              if(res.status === 200) {
                this.$jquery('#terminalModal').modal('hide');
                this.$swal('Terminal Saved Successfully','Terminal details were updated','success')
@@ -154,7 +194,7 @@ export default {
         // add data
         let formData = new FormData(vm.$refs.terminalForm)
         this.$axios.post(`${vm.apiURL}/terminals`, formData)
-          .then(res => { console.log(res)
+          .then(res => {
              if(res.data.status === true) {
                this.$jquery('#terminalModal').modal('hide');
                this.$swal('Terminal Added Successfully','New terminal with details was added','success')
@@ -179,6 +219,10 @@ export default {
         .then(res => this.httpCodes = res.data.data)
         .catch(err => console.log(err))
     },
+    loadTerminalCodes(i) {
+      this.$jquery('#terminalCodesModal').modal('show');
+      this.terminal.codes = this.terminals[i].codes;
+    },
     loadTerminal(i) {
       this.edit = true; this.$jquery('#terminalModal').modal('show');
       this.terminal.id = this.terminals[i].id;
@@ -187,28 +231,16 @@ export default {
       this.terminal.method = this.terminals[i].method;
       this.terminal.path = this.terminals[i].path;
       this.terminal.moduleID = this.terminals[i].module.id;
-      this.terminal.codes = this.terminals[i].codes;
-      
-      // add checked into each terminal code
-      if(this.terminal.codes.length) {
-        this.terminal.codes = this.terminals[i].codes;
-        this.terminal.codes.forEach(c => c.checked = true)
-
-        let terminalCodeIDs = [];
-        let allHttpCodeIDs = [];  
-        this.terminals[i].codes.forEach(c => terminalCodeIDs.push(c.id));
-        this.httpCodes.forEach(c1 => allHttpCodeIDs.push(c1.id));
+            
+      // add checked into each terminal code for checked codes
+      if(this.terminals[i].codes.length) {
+        let terminalCodes = this.terminals[i].codes;
+        terminalCodes.forEach(tCode => tCode.checked = true)
+        let allHttpCodes = this.httpCodes;
+        allHttpCodes.forEach(hCode => hCode.checked = false)
         
-        // FIXME: error is terminal codes aren't coming with IDs ???
-        // - Rama should return IDs with terminal codes
-
-        allHttpCodeIDs.forEach(c2 => {
-          if(!terminalCodeIDs.includes(c2.id)) {
-            this.terminal.codes.push(this.httpCodes.find(c3 => c3.id === c3.id));
-          }
-        })
-
-      // this.terminal.codes.forEach(c => c.checked = true);
+        // use lodash (_.unionBy) to join two array of objects with no duplicates
+        this.terminal.codes = this.$_.unionBy(terminalCodes, allHttpCodes, 'id'); 
       } else {
         this.terminal.codes = this.httpCodes;
         this.terminal.codes.forEach(c => c.checked = false);
@@ -239,9 +271,10 @@ export default {
       })
     },
     clearTerminalForm() {
-      this.terminal.id = ''; this.terminal.name = ''; this.terminal.description = ''; this.terminal.codes = [];
+      this.terminal.id = ''; this.terminal.name = ''; this.terminal.description = '';
       this.terminal.method = ''; this.terminal.path = ''; this.terminal.moduleID = '';
-      this.edit = false; document.querySelector('#terminalForm').reset();
+      this.terminal.codes.forEach(c => c.checked = false); this.edit = false;
+      document.querySelector('#terminalForm').reset();
     }
   }
 }

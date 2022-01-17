@@ -6,6 +6,7 @@ import VueRouter from 'vue-router';
 import Axios from 'axios'
 import Vuelidate from 'vuelidate';
 import jQuery from 'jquery'
+import Lodash from 'lodash'
 
 
 import 'sweetalert2/dist/sweetalert2.min.css';
@@ -16,6 +17,7 @@ Vue.config.productionTip = false
 
 Vue.prototype.$axios = Axios;
 Vue.prototype.$jquery = jQuery;
+Vue.prototype.$_ = Lodash;
 
 // basic global variables
 Vue.prototype.$baseServerURL = 'http://192.168.1.6'

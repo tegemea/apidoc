@@ -15,6 +15,7 @@
           <thead>
             <tr>
               <th>Code</th>
+              <th>Name</th>
               <th>Description</th>
               <th class="mw-10">Edit</th>
               <th class="mw-10">Delete</th>
@@ -23,6 +24,7 @@
           <tbody>
             <tr v-for="(httpCode, i) in httpCodes" :key="httpCode.id">
               <td>{{ httpCode.code }}</td>
+              <td>{{ httpCode.name }}</td>
               <td>{{ httpCode.description }}</td>
               <td><a @click.prevent="loadHttpCode(i)" href="#">Edit</a></td>
               <td><a @click.prevent="removeHttpCode(i)" href="#">Delete</a></td>
@@ -44,6 +46,10 @@
                   <div class="form-group">
                     <label for="code">Code</label>
                     <input type="text" name="code" v-model="httpCode.code" id="code" class="form-control">
+                  </div>
+                  <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" name="name" v-model="httpCode.name" id="name" class="form-control">
                   </div>
                   <div class="form-group">
                     <label for="description">Description</label>
@@ -71,7 +77,7 @@
 export default {
   data() {
     return {
-      httpCode: { id:'', code:'', description:'' },
+      httpCode: { id:'', name:'', code:'', description:'' },
       httpCodes: [], apiURL: this.$apiURL, edit: false
     }
   },
@@ -119,6 +125,7 @@ export default {
     loadHttpCode(i) {
       this.edit = true; this.$jquery('#httpCodeModal').modal('show');
       this.httpCode.id = this.httpCodes[i].id;
+      this.httpCode.name = this.httpCodes[i].name;
       this.httpCode.code = this.httpCodes[i].code;
       this.httpCode.description = this.httpCodes[i].description;
     },
