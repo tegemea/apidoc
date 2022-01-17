@@ -4,7 +4,9 @@
       <div class="col-lg-12">
         <h1 class="mb-3">
           Table Fields
-          <button class="btn btn-outline-primary float-right" data-toggle="modal" data-target="#tableFieldModal">Add New Table</button>
+          <button class="btn btn-outline-primary float-right" data-toggle="modal" data-target="#tableFieldModal">
+            Add New Table Field
+          </button>
         </h1>
       </div>
       <div class="col-lg-12">
@@ -122,8 +124,20 @@ export default {
     moduleID() { return this.tableField.moduleID },
   },
   watch: {
-    applicationID: function(id) {if(id) { this.applicationModules = this.applications.find(a => a.id === id).modules }},
-    moduleID: function(id) {if(id) { this.moduleTables = this.modules.find(m => m.id === id).tables }},
+    applicationID: function(id) {
+        if(id) { 
+          this.applicationModules = this.applications.find(a => a.id === id).modules 
+        } else {
+          this.applicationModules = [];
+        }
+      },
+    moduleID: function(id) {
+      if(id) { 
+        this.moduleTables = this.modules.find(m => m.id === id).tables 
+      } else {
+        this.moduleTables = [];
+      }
+    },
   },
   methods: {
     validateData() {
