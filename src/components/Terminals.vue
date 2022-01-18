@@ -80,7 +80,7 @@
                   <div class="card-header">Choose Http Codes for this terminal</div>
                   <div class="card-body">
                     <div class="row">
-                      <div v-for="code in terminal.codes" class="col-lg-4" :key="code.id">
+                      <div v-for="code in (!edit ? httpCodes : terminal.codes)" class="col-lg-4" :key="code.id">
                         <label>
                           <input type="checkbox" v-model="code.checked">
                             {{ code.code }} {{ code.name }}
@@ -118,7 +118,7 @@
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-          <div class="modal-body">
+          <div class="modal-body pt-0">
             <table class="table">
               <thead>
                 <tr>
@@ -152,7 +152,7 @@ export default {
       terminals: [], modules: [], httpCodes: [],
       baseServerURL: this.$baseServerURL,
       apiURL: this.$apiURL,
-      edit: true
+      edit: false
     }
   },
   computed: {
@@ -193,6 +193,11 @@ export default {
       } else {
         // add data
         let formData = new FormData(vm.$refs.terminalForm)
+        for(let i in this.httpCodes) {
+          if(this.httpCodes[i].checked) {
+            formData.append(`codes[${i}]`, this.httpCodes[i].id);
+          }
+        }
         this.$axios.post(`${vm.apiURL}/terminals`, formData)
           .then(res => {
              if(res.data.status === true) {
@@ -216,7 +221,10 @@ export default {
     },
     getHttpCodes() {
       this.$axios.get(`${this.apiURL}/httpCodes`)
-        .then(res => this.httpCodes = res.data.data)
+        .then(res => {
+          this.httpCodes = res.data.data;
+          this.httpCodes.forEach(c => c.checked = false)
+        })
         .catch(err => console.log(err))
     },
     loadTerminalCodes(i) {

@@ -118,7 +118,7 @@
                   <span aria-hidden="true">&times;</span>
                 </button>
               </div>
-              <div class="modal-body">
+              <div class="modal-body pt-0">
                 <table class="table">
                   <thead>
                     <tr>
@@ -154,7 +154,7 @@
                   <span aria-hidden="true">&times;</span>
                 </button>
               </div>
-              <div class="modal-body">
+              <div class="modal-body pt-0">
                 <table class="table">
                   <thead>
                     <tr>
