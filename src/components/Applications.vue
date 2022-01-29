@@ -33,6 +33,7 @@
               <td>{{ application.base_url }}</td>
               <td class="text-center">
                 <button href="#" :title="`View ${application.name} modules`"
+                  v-if="application.modules.length"
                   data-toggle="modal" data-target="#modulesListingModal"
                   class="btn btn-secondary badge badge-pill badge-secondary"
                   @click.prevent="loadApplicationModules(i)">
@@ -126,7 +127,6 @@
               </div>
               <div class="modal-footer">
                 <button @click="applicationModules = []" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <!-- <button type="button" class="btn btn-primary">Understood</button> -->
               </div>
             </div>
           </div>
@@ -176,9 +176,17 @@ export default {
         vm.$axios.post(`${vm.apiURL}/applications/`, formData)
           .then(res => {
              if(res.status === 201) {
-               this.$jquery('#applicationModal').modal('hide');
-               this.$swal('Application Added Successfully','','success')
+                this.$jquery('#applicationModal').modal('hide');
+            
+              this.applications.push({ 
+                id: res.data.data.id, name: res.data.data.name, description: res.data.data.description, 
+                version: res.data.data.version, format: res.data.data.format, scheme: res.data.data.scheme, 
+                baseURL: res.data.data.base_url, modules: res.data.data.modules
+              });
+
+              this.$swal('Application Added Successfully','','success')
                 .then(this.clearApplicationForm());
+
              }
            })
            .catch(err => console.log(err))
