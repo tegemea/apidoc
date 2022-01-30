@@ -22,7 +22,7 @@
           <tbody>
             <tr v-for="(module, i) in modules" :key="module.id">
               <td>{{ module.name }}</td>
-              <td>Application</td>
+              <td>{{ module.application.name }}</td>
               <td>{{ module.related ? 'Yes' : '---' }}</td>
               <td>{{ module.relationships }}</td>
               <td class="text-center">
@@ -182,19 +182,27 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from 'vuex';
+
 export default {
   data() {
     return {
       module: { id:'', applicationID:'', name:'', description:'', related: false, relationships:'', },
-      modules: [], moduleTerminals: [], applications: [], moduleTables: [],
-      baseServerURL: this.$baseServerURL,
-      apiURL: this.$apiURL,
+      // modules: [], 
+      moduleTerminals: [], 
+      // applications: [], 
+      moduleTables: [],
+      // baseServerURL: this.$baseServerURL,
+      // apiURL: this.$apiURL,
       edit: false
     }
   },
+  computed: {
+    ...mapGetters(['applications', 'modules', 'apiURL', 'baseURL']),
+    ...mapActions(['setApplications','setModules'])
+  },
   mounted() {
-    this.getModules();
-    this.getApplications();
+    // 
   },
   methods: {
     validateData() {
@@ -209,10 +217,19 @@ export default {
         formData.append('related', vm.module.related ? 1 : 0);
 
         vm.$axios.post(`${vm.apiURL}/modules/${vm.module.applicationID}/${vm.module.id}`, formData)
-          .then(res => { // console.log(res)
-             if(res.data.status === true) {
+          .then(res => { //console.log(res)
+             if(res.status === 200) {
                this.$jquery('#moduleModal').modal('hide');
-               this.$swal('Module Saved Successfully','Module details were updated','success')
+
+              // update the UI
+              const theModule = this.modules.find(m => m.id === this.module.id);
+
+              theModule.name = res.data.data.name; theModule.description = res.data.data.description;
+              theModule.application = res.data.data.application; theModule.related = res.data.data.related;
+              theModule.relationships = res.data.data.relationships; theModule.terminals = res.data.data.terminals;
+              theModule.tables = res.data.data.tables;
+
+              this.$swal('Module Saved Successfully','Module details were updated','success')
                 .then(this.clearModuleForm());
              }
            })
@@ -223,26 +240,35 @@ export default {
         formData.append('related', vm.module.related ? 1 : 0);
        
         vm.$axios.post(`${vm.apiURL}/modules/`, formData)
-          .then(res => { console.log(res)
-             if(res.data.status === true) {
-               this.$jquery('#moduleModal').modal('hide');
-               this.$swal('Module Added Successfully','New module with details was added','success')
+          .then(res => { //console.log(res.data.data)
+            if(res.status === 201) {
+              this.$jquery('#moduleModal').modal('hide');
+
+              // add new module into the list
+              this.modules.push({ 
+                  id: res.data.data.id, application: res.data.data.application, 
+                  name:res.data.data.name, description:res.data.data.description, 
+                  related: res.data.data.related, relationships: res.data.data.relationships,
+                  terminals: res.data.data.terminals, tables: res.data.data.tables
+                })
+
+              this.$swal('Module Added Successfully','New module with details was added','success')
                 .then(this.clearModuleForm());
              }
            })
           .catch(err => console.log(err))
       }
     },
-    getModules() {
-      this.$axios.get(`${this.apiURL}/modules`)
-        .then(res => this.modules = res.data.data)
-        .catch(err => console.log(err))
-    },
-    getApplications() {
-      this.$axios.get(`${this.apiURL}/applications`)
-        .then(res => this.applications = res.data.data)
-        .catch(err => console.log(err))
-    },
+    // getModules() {
+    //   this.$axios.get(`${this.apiURL}/modules`)
+    //     .then(res => this.modules = res.data.data)
+    //     .catch(err => console.log(err))
+    // },
+    // getApplications() {
+    //   this.$axios.get(`${this.apiURL}/applications`)
+    //     .then(res => this.applications = res.data.data)
+    //     .catch(err => console.log(err))
+    // },
     loadModule(i) {
       this.edit = true; this.$jquery('#moduleModal').modal('show');
       this.module.id = this.modules[i].id;

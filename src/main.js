@@ -8,6 +8,7 @@ import Vuelidate from 'vuelidate';
 import jQuery from 'jquery';
 import Lodash from 'lodash';
 
+import { store } from '../store/store'
 
 import 'sweetalert2/dist/sweetalert2.min.css';
 import 'bootstrap/dist/css/bootstrap.css';
@@ -56,6 +57,6 @@ Vue.use(VueRouter)
 Vue.use(Vuelidate)
 
 new Vue({
-  router,
+  router, store,
   render: h => h(App),
 }).$mount('#app')
