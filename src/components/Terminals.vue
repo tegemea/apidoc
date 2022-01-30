@@ -181,9 +181,6 @@ export default {
   },
   mounted() {
     this.httpCodes.forEach(c => c.checked = false);
-    // this.getHttpCodes();
-    // this.getModules();
-    // this.getTerminals();
   },
   methods: {
     ...mapMutations(['updateTerminal']),
