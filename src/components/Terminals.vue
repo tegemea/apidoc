@@ -48,14 +48,23 @@
           <div class="modal-body">
             <form ref="terminalForm" id="terminalForm">
               <div class="row">
-                <div class="col-lg-6 form-group">
+                <div class="col-lg-4 form-group">
+                  <label for="application_id">Select Application</label>
+                  <select name="application_id" v-model="terminal.applicationID" id="application_id" class="form-control">
+                    <option value="" selected disabled>--- Select Application ---</option>
+                    <option v-for="application in applications" :value="application.id" :key="application.id">
+                      {{ application.name }}
+                    </option>
+                  </select>
+                </div>
+                <div class="col-lg-4 form-group">
                   <label for="module_id">Select Module</label>
                   <select name="module_id" v-model="terminal.moduleID" id="module_id" class="form-control">
                     <option value="" selected disabled>--- Select Module ---</option>
-                    <option v-for="module in modules" :value="module.id" :key="module.id">{{ module.name }}</option>
+                    <option v-for="module in applicationModules" :value="module.id" :key="module.id">{{ module.name }}</option>
                   </select>
                 </div>
-                <div class="col-lg-6 form-group">
+                <div class="col-lg-4 form-group">
                   <label for="method">Http Method</label>
                   <select name="method" v-model="terminal.method" id="method" class="form-control">
                     <option value="" selected disabled>--- Select Http Method ---</option>
@@ -145,28 +154,39 @@
 
 
 <script>
+import { mapGetters, mapMutations } from 'vuex';
+
 export default {
   data() {
     return {
-      terminal: { id:'', name:'', description:'', method:'', path:'', moduleID:'', codes: [] },
-      terminals: [], modules: [], httpCodes: [],
-      baseServerURL: this.$baseServerURL,
-      apiURL: this.$apiURL,
+      terminal: { id:'', name:'', description:'', method:'', path:'', applicationID:'', moduleID:'', codes: [] },
+      applicationModules: [],
       edit: false
     }
   },
   computed: {
-    //
+    ...mapGetters(['baseURL', 'apiURL', 'applications', 'modules', 'httpCodes', 'terminals']),
+    applicationID: function() {
+      return this.terminal.applicationID;
+    }
   },
   watch: {
-    //
+    applicationID: function(applicationID) {
+      if(applicationID) {
+        this.applicationModules = this.applications.find(a => a.id === applicationID).modules;
+      } else {
+        this.applicationModules = [];
+      }
+    }
   },
   mounted() {
-    this.getHttpCodes();
-    this.getModules();
-    this.getTerminals();
+    this.httpCodes.forEach(c => c.checked = false);
+    // this.getHttpCodes();
+    // this.getModules();
+    // this.getTerminals();
   },
   methods: {
+    ...mapMutations(['updateTerminal']),
     validateData() {
       this.sendData();
     },
@@ -181,9 +201,23 @@ export default {
             formData.append(`codes[${i}]`, this.terminal.codes[i].id);
           }
         }
+
+        // for(var pair of formData.entries()) {
+        //   console.log(pair[0]+ ', '+ pair[1]);
+        // }
+        
         this.$axios.post(`${vm.apiURL}/terminals/${vm.terminal.id}`, formData)
           .then(res => {
              if(res.status === 200) {
+
+               const data = {
+                 id: res.data.data.id, name: res.data.data.name, description: res.data.data.description, 
+                 path: res.data.data.path, method: res.data.data.method, codes: res.data.data.codes, 
+                 module: res.data.data.module
+               }
+
+               this.updateTerminal(data);
+
                this.$jquery('#terminalModal').modal('hide');
                this.$swal('Terminal Saved Successfully','Terminal details were updated','success')
                 .then(this.clearTerminalForm());
@@ -209,24 +243,6 @@ export default {
           .catch(err => console.log(err))
       }
     },
-    getTerminals() {
-      this.$axios.get(`${this.apiURL}/terminals`)
-        .then(res => this.terminals = res.data.data)
-        .catch(err => console.log(err))
-    },
-    getModules() {
-      this.$axios.get(`${this.apiURL}/modules`)
-        .then(res => this.modules = res.data.data)
-        .catch(err => console.log(err))
-    },
-    getHttpCodes() {
-      this.$axios.get(`${this.apiURL}/httpCodes`)
-        .then(res => {
-          this.httpCodes = res.data.data;
-          this.httpCodes.forEach(c => c.checked = false)
-        })
-        .catch(err => console.log(err))
-    },
     loadTerminalCodes(i) {
       this.$jquery('#terminalCodesModal').modal('show');
       this.terminal.codes = this.terminals[i].codes;
@@ -239,6 +255,7 @@ export default {
       this.terminal.method = this.terminals[i].method;
       this.terminal.path = this.terminals[i].path;
       this.terminal.moduleID = this.terminals[i].module.id;
+      this.terminal.applicationID = this.modules.find(m => m.id === this.terminal.moduleID).application.id;
             
       // add checked into each terminal code for checked codes
       if(this.terminals[i].codes.length) {
@@ -281,6 +298,7 @@ export default {
     clearTerminalForm() {
       this.terminal.id = ''; this.terminal.name = ''; this.terminal.description = '';
       this.terminal.method = ''; this.terminal.path = ''; this.terminal.moduleID = '';
+      this.terminal.applicationID = ''; this.applicationModules = [];
       this.terminal.codes.forEach(c => c.checked = false); this.edit = false;
       document.querySelector('#terminalForm').reset();
     }

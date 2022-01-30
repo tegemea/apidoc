@@ -14,7 +14,6 @@ export const store = new Vuex.Store({
     tables: [],
     tableFields: [],
     terminals: [],
-    terminalCodes:[],
     terminalParameters: [],
   },
   getters: {
@@ -26,18 +25,57 @@ export const store = new Vuex.Store({
     tables(state) { return state.tables },
     tableFields(state) { return state.tableFields },
     terminals(state) { return state.terminals },
-    terminalCodes(state) { return state.terminalCodes },
     terminalParameters(state) { return state.terminalParameters }
   },
   mutations: {
+    // setting new entries to store
     storeApplications(state, applications) { state.applications = applications },
     storeModules(state, modules) { state.modules = modules },
     storeHttpCodes(state, httpCodes) { state.httpCodes = httpCodes },
     storeTables(state, tables) { state.tables = tables },
     storeTableFields(state, tableFields) { state.tableFields = tableFields },
     storeTerminals(state, terminals) { state.terminals = terminals },
-    storeTerminalCodes(state, terminalCodes) { state.terminalCodes = terminalCodes },
-    storeTerminalParameters(state, parameters) { state.terminalParameters = parameters }
+    storeTerminalParameters(state, parameters) { state.terminalParameters = parameters },
+
+    // adding data to existing store data
+    addApplication(state, application) { state.applications.push(application) },
+    addModule(state, module) { state.modules.push(module) },
+    addHttpCode(state, code) { state.httpCodes.push(code) },
+    addTables(state, table) { state.tables.push(table) },
+    addTableField(state, field) { state.tableFields.push(field) },
+    addTerminal(state, terminal) { state.terminals.push(terminal) },
+    addTerminalParameter(state, parameter) { state.terminalParameters.push(parameter) },
+
+    // updating existing store data
+    updateApplication(state, application) { 
+      let applicationToUpdate = state.applications.find(a => a.id === application.id);
+      Object.assign(applicationToUpdate, application);
+    },
+    updateModule(state, module) { 
+      let moduleToUpdate = state.modules.find(m => m.id === module.id);
+      Object.assign(moduleToUpdate, module);
+    },
+    updateHttpCode(state, code) { 
+      let codeToUpdate = state.httpCodes.find(c => c.id === code.id);
+      Object.assign(codeToUpdate, code);
+    },
+    updateTable(state, table) { 
+      let tableToUpdate = state.tables.find(t => t.id === table.id);
+      Object.assign(tableToUpdate, table);
+    },
+    updateTableField(state, field) { 
+      let fieldToUpdate = state.tableFields.find(f => f.id === field.id);
+      Object.assign(fieldToUpdate, field);
+    },
+    updateTerminal(state, terminal) {
+      let terminalToUpdate = state.terminals.find(t => t.id === terminal.id);
+      Object.assign(terminalToUpdate, terminal);
+    },
+    updateTerminalParameter(state, parameter) { 
+      let parameterToUpdate = state.terminalParameters.find(p => p.id === parameter.id);
+      Object.assign(parameterToUpdate, parameter);
+    }
+    
   },
   actions: {
     async setApplications({ state, commit }) {
