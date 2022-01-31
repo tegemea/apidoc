@@ -114,7 +114,6 @@ export const store = new Vuex.Store({
     },
     async setTerminalParameters({ state, commit }) {
       const { data: { data } } = await axios.get(`${state.apiURL}/terminalParameters`)
-      // .then(() => console.log('we have terminal parameters'))
       .catch(err => console.log(err.response.data.message));
       if(data) commit('storeTerminalParameters', data);
     }
