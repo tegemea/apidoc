@@ -8,6 +8,7 @@
       <thead>
         <tr>
           <th>Name</th>
+          <!-- <th>Application</th> -->
           <th>Module</th>
           <th class="text-center">Method</th>
           <th class="text-center">Http Codes</th>
@@ -19,6 +20,7 @@
       <tbody>
         <tr v-for="(terminal, i) in terminals" :key="terminal.id">
           <td>{{ terminal.name }}</td>
+          <!-- <td>{{ terminal.application.name }}</td> -->
           <td>{{ terminal.module.name }}</td>
           <td class="text-center">{{ terminal.method }}</td>
           <td class="text-center">

@@ -86,7 +86,6 @@ export const store = new Vuex.Store({
     },
     async setModules({ state, commit }) {
       const { data: { data } } = await axios.get(`${state.apiURL}/modules`)
-      // .then(() => console.log('we have modules'))
       .catch(err => console.log(err.response.data.message));
       if(data) commit('storeModules', data);
     },
@@ -110,9 +109,7 @@ export const store = new Vuex.Store({
     },
     async setTerminals({ state, commit }) {
       const { data: { data } } = await axios.get(`${state.apiURL}/terminals`)
-      // .then(() => console.log('we have terminals'))
       .catch(err => console.log(err.response.data.message));
-      if(state.modules.length) data.forEach(async t => { t.application = await state.modules.find(m => m.id === t.module.id).application });
       if(data) commit('storeTerminals', data);
     },
     async setTerminalParameters({ state, commit }) {

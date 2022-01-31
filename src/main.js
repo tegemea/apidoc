@@ -10,6 +10,15 @@ import Lodash from 'lodash';
 
 import { store } from '../store/store'
 
+// Load Applications, Modules, HttpCodes, Tables, TableFields, Terminals & Terminal Parameters
+store.dispatch('setApplications');
+store.dispatch('setModules');
+store.dispatch('setHttpCodes');
+store.dispatch('setTables');
+store.dispatch('setTableFields');
+store.dispatch('setTerminals');
+store.dispatch('setTerminalParameters');
+
 import 'sweetalert2/dist/sweetalert2.min.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
