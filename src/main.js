@@ -30,8 +30,8 @@ Vue.prototype.$jquery = jQuery;
 Vue.prototype.$_ = Lodash;
 
 // basic global variables
-Vue.prototype.$baseServerURL = 'http://192.168.1.2';
-Vue.prototype.$apiURL = 'http://192.168.1.2/api_doc';
+Vue.prototype.$baseServerURL = 'http://digitans.co.tz';
+Vue.prototype.$apiURL = 'http://digitans.co.tz/luso';
 
 // import components for use in routes
 import Dashboard from '@/components/Dashboard';

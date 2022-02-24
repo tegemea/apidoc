@@ -6,9 +6,10 @@ Vue.use(Vuex);
 
 export const store = new Vuex.Store({
   state: {
-    baseURL:'http://192.168.1.2',
-    apiURL:'http://192.168.1.2/api_doc',
+    baseURL:'http://digitans.co.tz',
+    apiURL:'http://digitans.co.tz/luso',
     applications: [],
+    groups: [],
     modules: [],
     httpCodes: [],
     tables: [],
@@ -20,6 +21,7 @@ export const store = new Vuex.Store({
     apiURL(state) { return state.apiURL },
     baseURL(state) { return state.baseURL },
     applications(state) { return state.applications; },
+    groups(state) { return state.groups; },
     modules(state) { return state.modules },
     httpCodes(state) { return state.httpCodes },
     tables(state) { return state.tables },
@@ -30,6 +32,7 @@ export const store = new Vuex.Store({
   mutations: {
     // setting new entries to store
     storeApplications(state, applications) { state.applications = applications },
+    storeGroups(state, groups) { state.groups = groups },
     storeModules(state, modules) { state.modules = modules },
     storeHttpCodes(state, httpCodes) { state.httpCodes = httpCodes },
     storeTables(state, tables) { state.tables = tables },
@@ -39,6 +42,7 @@ export const store = new Vuex.Store({
 
     // adding data to existing store data
     addApplication(state, application) { state.applications.push(application) },
+    addGroup(state, group) { state.groups.push(group) },
     addModule(state, module) { state.modules.push(module) },
     addHttpCode(state, code) { state.httpCodes.push(code) },
     addTables(state, table) { state.tables.push(table) },
@@ -50,6 +54,10 @@ export const store = new Vuex.Store({
     updateApplication(state, application) { 
       let applicationToUpdate = state.applications.find(a => a.id === application.id);
       Object.assign(applicationToUpdate, application);
+    },
+    updateGroup(state, group) { 
+      let groupToUpdate = state.groups.find(a => a.id === group.id);
+      Object.assign(groupToUpdate, group);
     },
     updateModule(state, module) { 
       let moduleToUpdate = state.modules.find(m => m.id === module.id);
@@ -75,7 +83,6 @@ export const store = new Vuex.Store({
       let parameterToUpdate = state.terminalParameters.find(p => p.id === parameter.id);
       Object.assign(parameterToUpdate, parameter);
     }
-    
   },
   actions: {
     async setApplications({ state, commit }) {
@@ -83,6 +90,12 @@ export const store = new Vuex.Store({
       // .then(() => console.log('we have terminal parameters'))
       .catch(err => console.log(err.response.data.message));
       if(data) commit('storeApplications', data);
+    },
+    async setGroups({ state, commit }) {
+      const { data: { data } } = await axios.get(`${state.apiURL}/groups`)
+      // .then(() => console.log('we have terminal parameters'))
+      .catch(err => console.log(err.response.data.message));
+      if(data) commit('storeGroups', data);
     },
     async setModules({ state, commit }) {
       const { data: { data } } = await axios.get(`${state.apiURL}/modules`)
