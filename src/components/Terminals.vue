@@ -1,10 +1,18 @@
 <template>
   <div>
+    <div v-if="!terminals.length && showLoading" class="loading">
+      <h1>Loading...</h1>
+      <p class="text-black-50">Please wait for content</p>
+      <button @click="showLoading = false" class="btn btn-sm btn-outline-secondary">
+        Taking too long? Cancel
+      </button>
+    </div>
     <h1 class="mb-3">
       Terminals / End-points
       <button class="btn btn-outline-primary float-right" data-toggle="modal" data-target="#terminalModal">Add New Terminal</button>
     </h1>
-    <table class="table">
+    <h3 v-if="!terminals.length" class="text-danger">Sorry, No Terminals</h3>
+    <table v-else class="table">
       <thead>
         <tr>
           <th>Name</th>
@@ -162,7 +170,7 @@ export default {
   data() {
     return {
       terminal: { id:'', name:'', description:'', method:'', path:'', applicationID:'', moduleID:'', codes: [] },
-      applicationModules: [],
+      applicationModules: [], showLoading: true,
       edit: false
     }
   },
@@ -304,3 +312,18 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.loading {
+  position: absolute;
+  background: rgba(255,255,255,.95);
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+</style>

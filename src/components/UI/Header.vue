@@ -17,11 +17,30 @@
 
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Oswald&display=swap');
+
 ul {
   display: flex;
 }
 ul li {
   display: block;
   margin: 12px 24px;
+  font-family: 'Oswald', sans-serif;
+}
+
+ul li a {
+  color: royalblue;
+  text-decoration: none;
+}
+
+ul li a:hover {
+  color: red;
+}
+
+ul li a.router-link-active,
+ul li a.router-link-exact-active {
+  border-bottom: 2px solid indianred;
+  color: indianred;
+  cursor: default;
 }
 </style>

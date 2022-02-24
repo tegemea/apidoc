@@ -1,5 +1,12 @@
 <template>
   <div>
+    <div v-if="!tables.length && showLoading" class="loading">
+      <h1>Loading...</h1>
+      <p class="text-black-50">Please wait for content</p>
+      <button @click="showLoading = false" class="btn btn-sm btn-outline-secondary">
+        Taking too long? Cancel
+      </button>
+    </div>
     <div class="row">
       <div class="col-12">
         <h1 class="mb-3">
@@ -8,7 +15,8 @@
         </h1>
       </div>
       <div class="col-12">
-        <table class="table">
+        <h3 v-if="!tables.length" class="text-danger">Sorry, No Tables</h3>
+        <table v-else class="table">
           <thead>
             <tr>
               <th>Name</th>
@@ -92,7 +100,7 @@ export default {
     return {
       table: { id:'', name:'', moduleID:'', applicationID:'', description:'' },
       tables: [], applications: [], applicationModules: [], modules: [],
-      apiURL: this.$apiURL,
+      apiURL: this.$apiURL, showLoading: true,
       edit: false
     }
   },
@@ -204,3 +212,18 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.loading {
+  position: absolute;
+  background: rgba(255,255,255,.95);
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+</style>

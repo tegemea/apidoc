@@ -36,6 +36,7 @@ Vue.prototype.$apiURL = 'http://digitans.co.tz/luso';
 // import components for use in routes
 import Dashboard from '@/components/Dashboard';
 import Applications from '@/components/Applications';
+import Groups from '@/components/Groups';
 import Modules from '@/components/Modules';
 import Terminals from '@/components/Terminals';
 import TerminalParameters from '@/components/TerminalParameters';
@@ -48,6 +49,7 @@ const routes = [
   { path:'/', redirect: '/dashboard' },
   { path:'/dashboard', component: Dashboard },
   { path:'/applications', component: Applications },
+  { path:'/groups', component: Groups },
   { path:'/modules', component: Modules },
   { path:'/terminals', component: Terminals },
   { path:'/terminal-parameters', component: TerminalParameters },

@@ -1,12 +1,20 @@
 <template>
   <div>
+    <div v-if="!terminalParameters.length && showLoading" class="loading">
+      <h1>Loading...</h1>
+      <p class="text-black-50">Please wait for content</p>
+      <button @click="showLoading = false" class="btn btn-sm btn-outline-secondary">
+        Taking too long? Cancel
+      </button>
+    </div>
     <h1 class="mb-3">
       Terminal Parameters
       <button class="btn btn-outline-primary float-right" 
         data-toggle="modal" data-target="#terminalParameterModal"
       >Add New Terminal Parameter</button>
     </h1>
-    <table class="table">
+    <h3 v-if="!terminalParameters.length" class="text-danger">Sorry, No Terminal Parameters</h3>
+    <table v-else class="table">
       <thead>
         <tr>
           <th>Name</th>
@@ -105,7 +113,7 @@ export default {
     return {
       terminalParameter: { id:'', name:'', applicationID:'', moduleID:'', terminalID:'', required:false, description:'' },
       terminalParameters: [], applications: [], modules: [], terminals: [], applicationModules: [], moduleTerminals:[],
-      apiURL: this.$apiURL, edit: false
+      apiURL: this.$apiURL, edit: false, showLoading: true
     }
   },
   mounted() {
@@ -246,3 +254,18 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.loading {
+  position: absolute;
+  background: rgba(255,255,255,.95);
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+</style>

@@ -1,15 +1,24 @@
 <template>
   <div>
+    <div v-if="!modules.length" class="loading">
+      <h1>Loading...</h1>
+      <p class="text-black-50">Please wait for content</p>
+      <button @click="showLoading = false" class="btn btn-sm btn-outline-secondary">
+        Taking too long? Cancel
+      </button>
+    </div>
     <div class="row">
       <div class="col-12">
         <h1 class="mb-3">
           Modules
           <button class="btn btn-outline-primary float-right" data-toggle="modal" data-target="#moduleModal">Add New Module</button>
         </h1>
-        <table class="table">
+        <h3 v-if="!modules.length" class="text-danger">Sorry, No Modules</h3>
+        <table v-else class="table">
           <thead>
             <tr>
               <th>Module Name</th>
+              <th>Module Group</th>
               <th>Application</th>
               <th>Related?</th>
               <th>Relationships</th>
@@ -22,6 +31,7 @@
           <tbody>
             <tr v-for="(module, i) in modules" :key="module.id">
               <td>{{ module.name }}</td>
+              <td>{{ module.group.name }}</td>
               <td>{{ module.application.name }}</td>
               <td>{{ module.related ? 'Yes' : '---' }}</td>
               <td>{{ module.relationships }}</td>
@@ -71,7 +81,14 @@
                         >{{ application.name }}</option>
                       </select>
                     </div>
-                    <div class="col-lg-8 form-group">
+                    <div class="col-lg-4 form-group">
+                      <label for="group_id">Select Group</label>
+                      <select name="group_id" v-model="module.groupID" id="group_id" class="form-control">
+                        <option value="" selected disabled>--- Select Group ---</option>
+                        <option v-for="group in applicationGroups" :value="group.id" :key="group.id">{{ group.name }}</option>
+                      </select>
+                    </div>
+                    <div class="col-lg-4 form-group">
                       <label for="name">Module Name</label>
                       <input type="text" name="name" v-model="module.name" id="name" class="form-control">
                     </div>
@@ -187,8 +204,8 @@ import { mapGetters, mapActions } from 'vuex';
 export default {
   data() {
     return {
-      module: { id:'', applicationID:'', name:'', description:'', related: false, relationships:'', },
-      // modules: [], 
+      module: { id:'', applicationID:'', groupID:'', name:'', description:'', related: false, relationships:'', },
+      applicationGroups: [], showLoading: true,
       moduleTerminals: [], 
       // applications: [], 
       moduleTables: [],
@@ -198,13 +215,25 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['applications', 'modules', 'apiURL', 'baseURL']),
-    ...mapActions(['setApplications','setModules'])
+    ...mapGetters(['applications', 'modules', 'groups', 'apiURL', 'baseURL']),
+    applicationID() { return this.module.applicationID },
+  },
+  watch: {
+    applicationID: function(id) {
+      if(id) {
+        this.applicationGroups = this.applications.find(a => +a.id === +id).groups
+      } else {
+        this.applicationGroups = [];
+      }
+    }
   },
   mounted() {
-    // 
+    if(!this.applications.length) this.setApplications();
+    if(!this.modules.length) this.setModules();
+    if(!this.groups.length) this.setGroups();
   },
   methods: {
+    ...mapActions(['setApplications','setModules', 'setGroups']),
     validateData() {
       this.sendData();
     },
@@ -275,6 +304,7 @@ export default {
       this.module.name = this.modules[i].name;
       this.module.application = this.modules[i].application;
       this.module.applicationID = this.modules[i].application.id;
+      this.module.groupID = this.modules[i].group.id;
       this.module.description = this.modules[i].description;
       this.module.relationships = this.modules[i].relationships;
       this.module.related = this.modules[i].related;
@@ -310,10 +340,25 @@ export default {
       })
     },
     clearModuleForm() {
-      this.module.id = ''; this.module.applicationID = ''; this.module.name = ''; this.module.application = '';
-      this.module.description = ''; this.module.related = ''; this.module. relationships = '';
-      this.edit = false; document.querySelector('#moduleForm').reset();
+      this.module.id = ''; this.module.applicationID = ''; this.module.groupID = ''; this.module.name = ''; 
+      this.module.application = ''; this.module.description = ''; this.module.related = ''; 
+      this.module. relationships = ''; this.edit = false; document.querySelector('#moduleForm').reset();
     }
   }
 }
 </script>
+
+<style scoped>
+.loading {
+  position: absolute;
+  background: rgba(255,255,255,.95);
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+</style>

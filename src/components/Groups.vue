@@ -1,5 +1,12 @@
 <template>
   <div>
+    <div v-if="!groups.length && showLoading" class="loading">
+      <h1>Loading...</h1>
+      <p class="text-black-50">Please wait for content</p>
+      <button @click="showLoading = false" class="btn btn-sm btn-outline-secondary">
+        Taking too long? Cancel
+      </button>
+    </div>
     <div class="row">
       <div class="col-12">
         <h1 class="mb-3">
@@ -8,10 +15,11 @@
         </h1>
       </div>
       <div class="col-12">
-        <table class="table">
+        <h3 v-if="!groups.length" class="text-danger">Sorry, No Groups</h3>
+        <table v-else class="table">
           <thead>
             <tr>
-              <th>Name</th>
+              <th>Group Name</th>
               <th>Application</th>
               <th class="mw-10">Edit</th>
               <th class="mw-10">Delete</th>
@@ -20,7 +28,7 @@
           <tbody>
             <tr v-for="(group, i) in groups" :key="group.id">
               <td>{{ group.name }}</td>
-              <td>{{ group.application.name }}</td>
+              <td>{{ group.application.name }} <span class="text-black-50">v{{ group.application.version }}</span></td>
               <td><a @click.prevent="loadGroup(i)" href="#">Edit</a></td>
               <td><a @click.prevent="removeGroup(i)" href="#">Delete</a></td>
             </tr>
@@ -68,24 +76,26 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapActions } from 'vuex';
 
 export default {
   data() {
     return {
       group: { id:'', name:'', applicationID:'' },
-      groups: [], apiURL: this.$apiURL,
+      showLoading: true,
+      // groups: [], applications: [],
+      apiURL: this.$apiURL,
       edit: false
     }
   },
-  mounted() {
-    if(!groups.length) this.setGroups();
-  },
   computed: {
-    ...mapGetters(['groups']),
+    ...mapGetters(['groups', 'applications'])
+  },
+  mounted() {
+    if(!this.groups.length) this.setGroups();
   },
   methods: {
-    ...mapActions(['setGroups']),
+    ...mapActions(['setGroups','setApplications']),
     validateData() {
       this.sendData()
     },
@@ -118,6 +128,11 @@ export default {
            .catch(err => console.log(err))
       }
     },
+    // getGroups() {
+    //   this.$axios.get(`${this.apiURL}/groups`)
+    //     .then(res => this.groups = res.data.data)
+    //     .catch(err => console.log(err))
+    // },
     loadGroup(i) {
       this.edit = true; this.$jquery('#groupModal').modal('show');
       this.group.id = this.groups[i].id;
@@ -135,7 +150,7 @@ export default {
         denyButtonText: `No, don't delete`,
       }).then((res) => {
         if (res.isConfirmed) {
-          this.$axios.delete(`${this.apiURL}/groups/${id}`)
+          this.$axios.delete(`${this.apiURL}/Groups/${id}`)
             .then(res => {
               if(res.status === 200) {
                 this.groups.splice(i, 1);
@@ -155,3 +170,18 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.loading {
+  position: absolute;
+  background: rgba(255,255,255,.95);
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+</style>
