@@ -114,6 +114,7 @@ export default {
     moduleID: function() { return this.table.moduleID }
   },
   watch: {
+    // watching applicationID
     applicationID: function(id) {
       if(id) {
         this.$axios.get(`${this.apiURL}/applications/${id}/modules`)
